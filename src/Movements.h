@@ -4,7 +4,12 @@
 #include <Wire.h>
 #include "QMC5883LCompass.h"
 
+
 QMC5883LCompass compass;
+
+
+
+
 
 
 const float WHEEL_DIAMETER = 6; // CM
@@ -164,7 +169,7 @@ int CMtoSteps(float cm)
     float f_result = cm / cm_step; // Calculate result as a float
     result = (int)f_result;        // Convert to an integer (note this is NOT rounded)
 
-    return result - ((cm / 25) * 2); // End and return result
+    return result; // End and return result
 }
 
 

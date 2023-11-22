@@ -1,3 +1,7 @@
+#ifndef MAPPING_H
+#define MAPPING_H
+
+
 class Point {
     public: //constructor
         Point(int x, int y) {
@@ -56,3 +60,4 @@ void Path(Point cords[], Point pInitial, int initial_Direction) { //note that th
 
 //set current direction and point as initial point and direction
 
+#endif
