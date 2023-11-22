@@ -39,9 +39,6 @@ class Point {
         int yCord;
 };
 
-// Point point1 = Point(0,0);
-Point list[2] = {Point(0,1), Point(1,1)} ;
-
 struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
     int deltaX;
     int deltaY;
