@@ -61,7 +61,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
     std::vector<Instruction> instructions;
 
     instructions.push_back(Instruction{CMtoSteps(25), Drivetrain::FORWARD, 50});
-    // Serial.println(sizeof(cords) / sizeof(cords[0]));
+    Serial.println(sizeof(cords) / sizeof(cords[0]));
     for (int i = 0; i < sizeof(cords) / sizeof(cords[0]); i++) { //goes through all the list of cords
         deltaX = cords[i].getX() - pInitial.getX();
         deltaY = cords[i].getY() - pInitial.getY();
