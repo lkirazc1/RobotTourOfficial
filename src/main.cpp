@@ -14,7 +14,12 @@ int cur_instruction = 0;
 const int kTurnSpeed = 50;
 const int kForwardSlits = 21;
 
-Instruction kInstructions[] = 
+
+Point points[] = {};
+Point starting_point = Point();
+
+
+std::vector<Instruction> kInstructions = Path(points, , 0);
 const int kNumInstructions = sizeof(kInstructions) / sizeof(kInstructions[0]);
 
 

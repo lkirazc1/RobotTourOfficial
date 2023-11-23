@@ -49,14 +49,9 @@ class Point {
         int yCord;
 };
 
-<<<<<<< HEAD
-struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
-=======
-// Point point1 = Point(0,0);
-Point list[2] = {Point(0,1), Point(1,1)} ;
+
 
 std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
->>>>>>> 84992d3 (FIxing Mapping)
     int deltaX;
     int deltaY;
     int final_Direction;
