@@ -79,8 +79,13 @@ int MotorDrivers[2][2][2] = {
 
 int MotorSpeedPins[NUM_MOTORS] = {24, 25, 22, 23};
 
+int GyroPins[] = {16, 17};
+// SCL - 16
+// SDA - 17
+
+
 // Corresponds to Motor values.
-int MotorDetectors[NUM_MOTORS] = {20, 15, 17, 16};
+int MotorDetectors[NUM_MOTORS] = {20, 15, 4, 5};
 
 void setup_motors()
 {

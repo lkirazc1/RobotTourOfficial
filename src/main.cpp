@@ -3,6 +3,7 @@
 #include "Drivetrain.h"
 #include "Mapping.h"
 
+
 Drivetrain* drivetrain;
 
 int cur_instruction = 0;
@@ -15,12 +16,12 @@ const int kTurnSpeed = 50;
 const int kForwardSlits = 21;
 
 
-Point points[] = {};
-Point starting_point = Point();
+Point points[] = {Point(1, 0), Point(1, 1)};
+Point starting_point = Point(0, 0);
 
 
-std::vector<Instruction> kInstructions = Path(points, , 0);
-const int kNumInstructions = sizeof(kInstructions) / sizeof(kInstructions[0]);
+std::vector<Instruction> kInstructions = Path(points, starting_point, 0);
+const int kNumInstructions = kInstructions.size();
 
 
 void setup()
@@ -40,6 +41,7 @@ void setup()
 
 void loop()
 {
+  
   drivetrain->loop();
   if (!drivetrain->is_moving())
   {

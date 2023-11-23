@@ -1,6 +1,7 @@
 #ifndef MAPPING_H
 #define MAPPING_H
 #include <vector>
+#include <iostream>
 #include "Drivetrain.h"
 #include "Movements.h"
 
@@ -60,7 +61,8 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
     std::vector<Instruction> instructions;
 
     instructions.push_back(Instruction{CMtoSteps(25), Drivetrain::FORWARD, 50});
-    for (int i = 0; i < sizeof(cords)/sizeof(cords[0]); i++) { //goes through all the list of cords
+    Serial.println(sizeof(cords) / sizeof(cords[0]));
+    for (int i = 0; i < sizeof(cords) / sizeof(cords[0]); i++) { //goes through all the list of cords
         deltaX = cords[i].getX() - pInitial.getX();
         deltaY = cords[i].getY() - pInitial.getY();
 
@@ -107,8 +109,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
                 }
             }
         }
-
-        return instructions;
     }
+    return instructions;
 }
 #endif

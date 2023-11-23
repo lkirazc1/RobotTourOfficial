@@ -6,6 +6,8 @@
 #include <Arduino.h>
 //#include "Movements.h"
 #include <cmath>
+#include "GY521.h"
+
 
 
 static const float kRawCalibrationSpeedAdj[NUM_MOTORS] = {
