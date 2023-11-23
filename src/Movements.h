@@ -8,10 +8,6 @@
 QMC5883LCompass compass;
 
 
-
-
-
-
 const float WHEEL_DIAMETER = 6; // CM
 const int STEP_COUNT = 20;      // Ticks on Wheel
 

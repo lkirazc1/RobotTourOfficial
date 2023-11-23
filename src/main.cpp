@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Movements.h"
 #include "Drivetrain.h"
+#include "Mapping.h"
 
 Drivetrain* drivetrain;
 
@@ -13,33 +14,7 @@ int cur_instruction = 0;
 const int kTurnSpeed = 50;
 const int kForwardSlits = 21;
 
-const struct
-{
-  int slits;
-  Drivetrain::Movement movement;
-  int speed_perc;
-} kInstructions[] = {
-    {CMtoSteps(25), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_LEFT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_RIGHT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_RIGHT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_LEFT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_RIGHT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_LEFT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {CMtoSteps(50), Drivetrain::BACKWARD, 50},
-    {10000, Drivetrain::MOVE_LEFT, 80},
-    {CMtoSteps(100), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_RIGHT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-    {10000, Drivetrain::MOVE_RIGHT, 80},
-    {CMtoSteps(50), Drivetrain::FORWARD, 50},
-};
+Instruction kInstructions[] = 
 const int kNumInstructions = sizeof(kInstructions) / sizeof(kInstructions[0]);
 
 
@@ -69,7 +44,7 @@ void loop()
     }
     Serial.println("Starting next instruction after 500ms");
     delay(500);
-    drivetrain->Go(kInstructions[cur_instruction].slits, kInstructions[cur_instruction].movement, kInstructions[cur_instruction].speed_perc);
+    drivetrain->Go(kInstructions.at(cur_instruction).slits, kInstructions.at(cur_instruction).movement, kInstructions.at(cur_instruction).speed_perc);
     cur_instruction++;
   }
 }
