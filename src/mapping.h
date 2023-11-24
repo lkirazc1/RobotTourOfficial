@@ -1,6 +1,17 @@
 #ifndef MAPPING_H
 #define MAPPING_H
 #include <vector>
+#include <iostream>
+#include "Drivetrain.h"
+#include "Movements.h"
+
+
+struct Instruction
+{
+    int slits;
+    Drivetrain::Movement movement;
+    int speed_perc;
+};
 
 class Point {
     public: //constructor
@@ -39,18 +50,25 @@ class Point {
         int yCord;
 };
 
-struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
+
+
+std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
     int deltaX;
     int deltaY;
     int final_Direction;
     int current_Direction = int_Direction;
+    int delta_Direction;
+    boolean goReverse;
     Point current_Point = pInitial;
-    std::vector<struct> instructions();
+    std::vector<Instruction> instructions;
+    instructions.push_back({CMtoSteps(25), Drivetrain::FORWARD, 50});
 
-    instructions.insert({CMtoSteps(25), Drivetrain::FORWARD, 50});
-    for(int i = 0; i < sizeof(cords)/sizeof(cords[0]); i++) { //goes through all the list of cords
-        deltaX = cords[i].getX() - pInitial.getX();
-        deltaY = cords[i].getY() - pInitial.getY();
+
+    // int numInstructions = std::extent<decltype(cords)>::value;
+
+    for (int i = 0; i < len; i++) { //goes through all the list of cords
+        deltaX = cords[i].getX() - current_Point.getX();
+        deltaY = cords[i].getY() - current_Point.getY();
 
 
         if(deltaX > 0) { //right
@@ -64,18 +82,39 @@ struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that th
         } else {
             final_Direction = current_Direction;
         }
+        Serial.print("deltaX: ");
+        Serial.println(deltaX);
+        Serial.print("deltaY: ");
+        Serial.println(deltaY);
 
-        while(final_Direction != current_Direction) { //turn right until robot is facing correct direction
-            instructions.insert({10000, Drivetrain::MOVE_RIGHT, 80});
-            current_Direction += 90;
-            if(current_Direction >= 360) {
-                current_Direction -= 360;
+        Serial.print("Current Direction: ");
+        Serial.println(current_Direction);
+        Serial.print("Final Direction: ");
+        Serial.println(final_Direction);
+        Serial.println();
+
+        goReverse = false;
+        while(final_Direction != current_Direction || goReverse) { //turn right until robot is facing correct direction
+            delta_Direction = final_Direction - current_Direction;
+  
+            if(abs(delta_Direction) == 180) {
+                goReverse = true;
+            } else {
+                instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
+                current_Direction += 90;
+                if(current_Direction >= 360) {
+                    current_Direction -= 360;
+                }
             }
         }
 
         if(deltaX != 0) { //Move forwards and updates position
             for(int j = 0; j < abs(deltaX); j++) {
-                instructions.insert({CMtoSteps(50), Drivetrain::FORWARD, 50})
+                if(goReverse) {
+                    instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
+                } else {
+                    instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
+                }
 
                 if(deltaX > 0) {
                     current_Point.incX();
@@ -86,7 +125,11 @@ struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that th
             }
         } else if(deltaY != 0) {
             for(int j = 0; j < abs(deltaY); j++) {
-                instructions.insert({CMtoSteps(50), Drivetrain::FORWARD, 50})
+                if(goReverse) {
+                    instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
+                } else {
+                    instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
+                }
 
                 if(deltaY > 0) {
                     current_Point.incY();
@@ -95,19 +138,7 @@ struct[] Path(Point cords[], Point pInitial, int int_Direction) { //note that th
                 }
             }
         }
-
-        int numInstructions = sizeof(instructions)/sizeof(instructions.at(0));
-        const struct{
-            int slits;
-            Drivetrain::Movement movement;
-            int speed_perc;
-        } kInstructions[numInstructions]
-
-        for(int j = 0; j < numInstructions; j++) {
-            kInstructions[j] = instructions.at(j);
-        }
-
-        return kInstructions;
     }
+    return instructions;
 }
 #endif
