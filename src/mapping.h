@@ -65,8 +65,8 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
     // int numInstructions = std::extent<decltype(cords)>::value;
 
     for (int i = 0; i < len; i++) { //goes through all the list of cords
-        deltaX = cords[i].getX() - pInitial.getX();
-        deltaY = cords[i].getY() - pInitial.getY();
+        deltaX = cords[i].getX() - current_Point.getX();
+        deltaY = cords[i].getY() - current_Point.getY();
 
 
         if(deltaX > 0) { //right
@@ -80,6 +80,16 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         } else {
             final_Direction = current_Direction;
         }
+        Serial.print("deltaX: ");
+        Serial.println(deltaX);
+        Serial.print("deltaY: ");
+        Serial.print(deltaY);
+
+        Serial.print("Current Direction: ");
+        Serial.println(current_Direction);
+        Serial.print("Final Direction: ");
+        Serial.println(final_Direction);
+        Serial.println();
 
         while(final_Direction != current_Direction) { //turn right until robot is facing correct direction
             instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
