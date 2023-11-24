@@ -59,9 +59,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
     int current_Direction = int_Direction;
     Point current_Point = pInitial;
     std::vector<Instruction> instructions;
-
-    instructions.push_back(Instruction{CMtoSteps(25), Drivetrain::FORWARD, 50});
-    Serial.println(sizeof(cords) / sizeof(cords[0]));
+    instructions.push_back({CMtoSteps(25), Drivetrain::FORWARD, 50});
     for (int i = 0; i < sizeof(cords) / sizeof(cords[0]); i++) { //goes through all the list of cords
         deltaX = cords[i].getX() - pInitial.getX();
         deltaY = cords[i].getY() - pInitial.getY();
@@ -80,7 +78,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
         }
 
         while(final_Direction != current_Direction) { //turn right until robot is facing correct direction
-            instructions.push_back(Instruction{10000, Drivetrain::MOVE_RIGHT, 80});
+            instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
             current_Direction += 90;
             if(current_Direction >= 360) {
                 current_Direction -= 360;
@@ -89,7 +87,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
 
         if(deltaX != 0) { //Move forwards and updates position
             for(int j = 0; j < abs(deltaX); j++) {
-                instructions.push_back(Instruction{CMtoSteps(50), Drivetrain::FORWARD, 50});
+                instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
 
                 if(deltaX > 0) {
                     current_Point.incX();
@@ -100,7 +98,7 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
             }
         } else if(deltaY != 0) {
             for(int j = 0; j < abs(deltaY); j++) {
-                instructions.push_back(Instruction{CMtoSteps(50), Drivetrain::FORWARD, 50});
+                instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
 
                 if(deltaY > 0) {
                     current_Point.incY();
