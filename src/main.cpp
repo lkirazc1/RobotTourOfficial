@@ -18,10 +18,11 @@ const int kForwardSlits = 21;
 
 
 Point points[] = {Point(1, 0), Point(1, 1)};
+const int points_len = sizeof(points)/sizeof(points[0]);
 Point starting_point = Point(0, 0);
 
 
-std::vector<Instruction> kInstructionsBuffer = Path(points, starting_point, 0);
+std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0);
 const int kNumInstructions = kInstructionsBuffer.size();
 Instruction* kInstructions = kInstructionsBuffer.data();
 

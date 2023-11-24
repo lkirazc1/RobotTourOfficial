@@ -52,7 +52,7 @@ class Point {
 
 
 
-std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
+std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
     int deltaX;
     int deltaY;
     int final_Direction;
@@ -60,7 +60,11 @@ std::vector<Instruction> Path(Point cords[], Point pInitial, int int_Direction) 
     Point current_Point = pInitial;
     std::vector<Instruction> instructions;
     instructions.push_back({CMtoSteps(25), Drivetrain::FORWARD, 50});
-    for (int i = 0; i < sizeof(cords) / sizeof(cords[0]); i++) { //goes through all the list of cords
+
+
+    // int numInstructions = std::extent<decltype(cords)>::value;
+
+    for (int i = 0; i < len; i++) { //goes through all the list of cords
         deltaX = cords[i].getX() - pInitial.getX();
         deltaY = cords[i].getY() - pInitial.getY();
 
