@@ -5,6 +5,7 @@
 #include "Drivetrain.h"
 #include "Movements.h"
 
+int getPredictedDirection(int currentDirection, int angleOffset);
 
 struct Instruction
 {
@@ -57,7 +58,7 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
     int deltaY;
     int final_Direction;
     int current_Direction = int_Direction;
-    int delta_Direction;
+    int predicted_Direction;
     boolean goReverse;
     Point current_Point = pInitial;
     std::vector<Instruction> instructions;
@@ -94,16 +95,22 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         Serial.println();
 
         goReverse = false;
-        while(final_Direction != current_Direction || goReverse) { //turn right until robot is facing correct direction
-            delta_Direction = final_Direction - current_Direction;
-  
-            if(abs(delta_Direction) == 180) {
+
+        predicted_Direction = getPredictedDirection(current_Direction, 90); //gives turning direction
+        if(predicted_Direction == final_Direction) {
+            instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
+            current_Direction = final_Direction;
+        } else {
+            predicted_Direction = getPredictedDirection(current_Direction, 180);
+            
+            if(predicted_Direction == final_Direction) {
                 goReverse = true;
             } else {
-                instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
-                current_Direction += 90;
-                if(current_Direction >= 360) {
-                    current_Direction -= 360;
+                predicted_Direction = getPredictedDirection(current_Direction, 270);
+
+                if(predicted_Direction == final_Direction) {
+                    instructions.push_back({10000, Drivetrain::MOVE_LEFT, 80});
+                    current_Direction = final_Direction;
                 }
             }
         }
@@ -140,5 +147,13 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         }
     }
     return instructions;
+}
+
+int getPredictedDirection(int currentDirection, int angleOffset) {
+    int prediction = currentDirection + angleOffset;
+    if(prediction >= 360) {
+        prediction -= 360;
+    }
+    return prediction;
 }
 #endif
