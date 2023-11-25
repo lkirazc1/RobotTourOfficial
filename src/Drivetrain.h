@@ -6,7 +6,6 @@
 #include <Arduino.h>
 #include "Movements.h"
 #include <cmath>
-#include "GY521.h"
 
 
 
@@ -40,10 +39,11 @@ public:
         memset(num_slits_left_, 0, sizeof(num_slits_left_));
         memset(is_moving_, 0, sizeof(is_moving_));
         memcpy(calibration_speed_adj_, kRawCalibrationSpeedAdj, sizeof(kRawCalibrationSpeedAdj));
-        north_ = getHackedAzimuth(50);
-        current_degrees_ = north_;
-        Serial.print("North: ");
-        Serial.println(north_);
+        setup_sensor(2, 2);
+        // north_ = getHackedAzimuth(50);
+        // current_degrees_ = north_;
+        // Serial.print("North: ");
+        // Serial.println(north_);
     }
 
     bool is_moving() const {
@@ -99,9 +99,9 @@ public:
 
         else if (movement == MOVE_LEFT)
         {
-            current_degrees_ = (current_degrees_ + 360 - 90) % 360;
-            Serial.print("Current degrees: ");
-            Serial.println(current_degrees_);
+            // current_degrees_ = (current_degrees_ + 360 - 90) % 360;
+            // Serial.print("Current degrees: ");
+            // Serial.println(current_degrees_);
 
             for (int i = 0; i < NUM_MOTORS; i++)
             {
@@ -120,9 +120,9 @@ public:
 
         else if (movement == MOVE_RIGHT)
         {
-            current_degrees_ = (current_degrees_ + 90) % 360;
-            Serial.print("Current degrees: ");
-            Serial.println(current_degrees_);
+            // current_degrees_ = (current_degrees_ + 90) % 360;
+            // Serial.print("Current degrees: ");
+            // Serial.println(current_degrees_);
 
             for (int i = 0; i < NUM_MOTORS; i++)
             {
@@ -144,9 +144,9 @@ public:
     void loop()
     {
         int now = millis();
-        int azimuth = getHackedAzimuth();
-        bool target_direction_reached =
-            (directionDiff(azimuth, current_degrees_) < 5);
+        // int azimuth = getHackedAzimuth();
+        // bool target_direction_reached =
+        //     (directionDiff(azimuth, current_degrees_) < 5);
 
         // Check slits left.
         for (int i = 0; i < NUM_MOTORS; i++) {
@@ -170,15 +170,15 @@ public:
 
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT))
             {
-                if (target_direction_reached)
-                {
-                    Serial.print("Stopping target: ");
-                    Serial.print(current_degrees_);
-                    Serial.print(" current: ");
-                    Serial.println(azimuth);
-                    is_moving_[i] = false;
-                    motor_run((Motor)i, MOTOR_STOP, 0);
-                }
+                // if (target_direction_reached)
+                // {
+                //     Serial.print("Stopping target: ");
+                //     Serial.print(current_degrees_);
+                //     Serial.print(" current: ");
+                //     Serial.println(azimuth);
+                //     is_moving_[i] = false;
+                //     motor_run((Motor)i, MOTOR_STOP, 0);
+                // }
             }
 
             last_read_[i] = cur_slit;
@@ -187,6 +187,18 @@ public:
                 motor_run((Motor)i, MOTOR_STOP, 0);
             }
         }
+        sensor.read();
+        float x = sensor.getAngleX();
+        float y = sensor.getAngleY();
+        float z = sensor.getAngleZ();
+        Serial.println("X: ");
+        Serial.println(x);
+        Serial.println("Y: ");
+        Serial.println(y);
+        Serial.println("Z: ");
+        Serial.println(z);
+        delay(1000);
+
 
         if (now > last_time_ + kCheckTime) {
             last_time_ = now;

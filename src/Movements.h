@@ -2,29 +2,52 @@
 #define MOVEMENTS_H
 
 #include <Wire.h>
-#include "QMC5883LCompass.h"
+// #include "QMC5883LCompass.h"
+#include "GY521.h"
+#include <cstdint>
 
 
-QMC5883LCompass compass;
+
+GY521 sensor(0x68, &Wire1);
+// QMC5883LCompass compass;
 
 
 const float WHEEL_DIAMETER = 6; // CM
 const int STEP_COUNT = 20;      // Ticks on Wheel
 
-int getHackedAzimuth(int readDelayMs = 1) {
-    compass.read();
-    delay(readDelayMs);
-    int azimuth = compass.getAzimuth() + 180;
-    if (azimuth <= 90) {
-        return azimuth;
-    } else if (azimuth <= 180) {
-        return azimuth;
-    } else if (azimuth <= 270) {
-        return azimuth;
-    } else {
-        return azimuth;
+// SCL - 16
+// SDA - 17
+bool is_sensor_working()
+{
+    bool is_working = sensor.begin();
+    return is_working;
+}
+
+void setup_sensor(int accel_sensitivity, int gyro_sensitivity)
+{
+    sensor.setAccelSensitivity(accel_sensitivity);
+    sensor.setGyroSensitivity(gyro_sensitivity);
+    while (sensor.wakeup() == false)
+    {
+        Serial.println("Not waking up");
+        delay(500);
     }
 }
+
+// int getHackedAzimuth(int readDelayMs = 1) {
+//     compass.read();
+//     delay(readDelayMs);
+//     int azimuth = compass.getAzimuth() + 180;
+//     if (azimuth <= 90) {
+//         return azimuth;
+//     } else if (azimuth <= 180) {
+//         return azimuth;
+//     } else if (azimuth <= 270) {
+//         return azimuth;
+//     } else {
+//         return azimuth;
+//     }
+// }
 
 int directionDiff(int azimuth1, int azimuth2) {
     int diff = abs(azimuth1 - azimuth2);
@@ -78,10 +101,6 @@ int MotorDrivers[2][2][2] = {
         {2, 3}}};
 
 int MotorSpeedPins[NUM_MOTORS] = {24, 25, 22, 23};
-
-int GyroPins[] = {16, 17};
-// SCL - 16
-// SDA - 17
 
 
 // Corresponds to Motor values.
