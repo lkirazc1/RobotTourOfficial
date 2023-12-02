@@ -40,6 +40,7 @@ public:
         memset(is_moving_, 0, sizeof(is_moving_));
         memcpy(calibration_speed_adj_, kRawCalibrationSpeedAdj, sizeof(kRawCalibrationSpeedAdj));
         setup_sensor(2, 2);
+        angularPos = 0;
         // north_ = getHackedAzimuth(50);
         // current_degrees_ = north_;
         // Serial.print("North: ");
@@ -170,6 +171,11 @@ public:
 
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT))
             {
+                
+            }
+
+            // if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT))
+            // {
                 // if (target_direction_reached)
                 // {
                 //     Serial.print("Stopping target: ");
@@ -179,7 +185,7 @@ public:
                 //     is_moving_[i] = false;
                 //     motor_run((Motor)i, MOTOR_STOP, 0);
                 // }
-            }
+            // }
 
             last_read_[i] = cur_slit;
             if (num_slits_left_[i] <= 0 && is_moving_[i]) {
@@ -187,38 +193,47 @@ public:
                 motor_run((Motor)i, MOTOR_STOP, 0);
             }
         }
-        sensor.read();
-        float x = sensor.getAngleX();
-        float y = sensor.getAngleY();
-        float z = sensor.getAngleZ();
-        Serial.println("X: ");
-        Serial.println(x);
-        Serial.println("Y: ");
-        Serial.println(y);
-        Serial.println("Z: ");
-        Serial.println(z);
-        delay(1000);
 
 
         if (now > last_time_ + kCheckTime) {
             last_time_ = now;
-            for (int i = 0; i < NUM_MOTORS; i++)
-            {
-                if (!is_moving_[i]) continue;
+            //for (int i = 0; i < NUM_MOTORS; i++)
+            //{
+                // if (!is_moving_[i]) continue;
 
                 // Serial.print("Motor ");
                 // Serial.print(i);
                 // Serial.print(": ");
                 // Serial.println(num_slits_left_[i]);
+            //}
+            sensor.read();
+
+            float current_z = sensor.getGyroZ() + z_offset;
+            
+            angularPos -= current_z*kCheckTime*.001; //integrates angular velocity with respect to time
+            if (angularPos < 0) {
+                angularPos += 360;
             }
+            if (angularPos > 360) {
+                angularPos -= 360;
+            }
+
+
+            Serial.print("Angular Position ");
+            Serial.println(angularPos);
+            Serial.println();
+
         }
     }
 
 private:
-    static const int kCheckTime = 100; 
+    static const int kCheckTime = 50; 
+    const int z_offset = 1;
 
     Movement movement;
     // int rotation_starting_direction;
+
+    double angularPos;
     int last_time_ = 0;
     int last_read_[NUM_MOTORS];
     int num_slits_left_[NUM_MOTORS];
