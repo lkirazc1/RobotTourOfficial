@@ -23,7 +23,7 @@ const int kTurnSpeed = 50;
 const int kForwardSlits = 21;
 
 
-Point points[] = {Point(1, 0), Point(1, 2), Point(0, 2), Point(2, 2)};
+Point points[] = {Point(1, 0), Point(1, 2), Point(0, 2), Poin};
 const int points_len = sizeof(points)/sizeof(points[0]);
 Point starting_point = Point(0, 0);
 

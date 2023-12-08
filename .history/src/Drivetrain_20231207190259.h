@@ -43,7 +43,7 @@ public:
         angularPos = 0;
         velocity_over_time = 0;
         count = 0;
-        current_degrees_ = 0;
+        int current_
         // north_ = getHackedAzimuth(50);
         // current_degrees_ = north_;
         // Serial.print("North: ");

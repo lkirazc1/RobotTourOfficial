@@ -43,7 +43,6 @@ public:
         angularPos = 0;
         velocity_over_time = 0;
         count = 0;
-        current_degrees_ = 0;
         // north_ = getHackedAzimuth(50);
         // current_degrees_ = north_;
         // Serial.print("North: ");
@@ -187,7 +186,7 @@ public:
                 // }
             // }
             double direction_diff = directionDiff(current_degrees_, angularPos);
-            bool target_direction_reached = (direction_diff < 5.0);
+            bool target_direction_reached = (direction_diff < 150.0);
             Serial.println(direction_diff);
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT) && target_direction_reached)
             {

@@ -49,8 +49,8 @@ void setup_sensor(int accel_sensitivity, int gyro_sensitivity)
 //     }
 // }
 
-int directionDiff(int azimuth1, int azimuth2) {
-    int diff = abs(azimuth1 - azimuth2);
+double directionDiff(double azimuth1, double azimuth2) {
+    double diff = abs(azimuth1 - azimuth2);
     if (diff > 180) {
         return 360 - diff;
     } else {
