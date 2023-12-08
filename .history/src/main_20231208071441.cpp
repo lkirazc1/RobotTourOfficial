@@ -18,7 +18,6 @@ float ax, ay, az;
 float gx, gy, gz;
 float t;
 int counter = 0;
-bool button_pressed = false;
 
 const int kTurnSpeed = 50;
 const int kForwardSlits = 21;
@@ -32,16 +31,9 @@ Point starting_point = Point(0, 0);
 std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0);
 //const int kNumInstructions = kInstructionsBuffer.size();
 //Instruction* kInstructions = kInstructionsBuffer.data();
-Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                // {10000, Drivetrain::MOVE_RIGHT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_LEFT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_RIGHT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_LEFT, 80},
+Instruction kInstructions[] = {{CMtoSteps(25), Drivetrain::FORWARD, 80},
+                                {10000, Drivetrain::}
 };
-int kNumInstructions = sizeof(kInstructions)/sizeof(kInstructions[0]);
 
 
 void setup()
@@ -79,26 +71,18 @@ void setup()
 
 void loop()
 {
-  if (buttonPressed() && !button_pressed)
-  {
-    button_pressed = true;
-  }
 
-  if (button_pressed)
+  drivetrain->loop();
+  if (!drivetrain->is_moving())
   {
-
-    drivetrain->loop();
-    if (!drivetrain->is_moving())
+    if (cur_instruction >= kNumInstructions)
     {
-      if (cur_instruction >= kNumInstructions)
-      {
-        return;
-      }
-      Serial.println("Starting next instruction after 500ms");
-      delay(500);
-      drivetrain->Go(kInstructions[cur_instruction].slits, kInstructions[cur_instruction].movement, kInstructions[cur_instruction].speed_perc);
-      cur_instruction++;
+      return;
     }
+    Serial.println("Starting next instruction after 500ms");
+    delay(500);
+    drivetrain->Go(kInstructions[cur_instruction].slits, kInstructions[cur_instruction].movement, kInstructions[cur_instruction].speed_perc);
+    cur_instruction++;
   }
 }
 

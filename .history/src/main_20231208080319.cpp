@@ -32,14 +32,14 @@ Point starting_point = Point(0, 0);
 std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0);
 //const int kNumInstructions = kInstructionsBuffer.size();
 //Instruction* kInstructions = kInstructionsBuffer.data();
-Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                // {10000, Drivetrain::MOVE_RIGHT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_LEFT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_RIGHT, 80},
-                                // {CMtoSteps(50), Drivetrain::FORWARD, 80},
-                                // {10000, Drivetrain::MOVE_LEFT, 80},
+Instruction kInstructions[] = {{CMtoSteps(25), Drivetrain::FORWARD, 80},
+                                {10000, Drivetrain::MOVE_RIGHT, 80},
+                                {CMtoSteps(50), Drivetrain::FORWARD, 80},
+                                {10000, Drivetrain::MOVE_LEFT, 80},
+                                {CMtoSteps(50), Drivetrain::FORWARD, 80},
+                                {10000, Drivetrain::MOVE_RIGHT, 80},
+                                {CMtoSteps(50), Drivetrain::FORWARD, 80},
+                                {10000, Drivetrain::MOVE_LEFT, 80},
 };
 int kNumInstructions = sizeof(kInstructions)/sizeof(kInstructions[0]);
 
@@ -79,11 +79,6 @@ void setup()
 
 void loop()
 {
-  if (buttonPressed() && !button_pressed)
-  {
-    button_pressed = true;
-  }
-
   if (button_pressed)
   {
 
@@ -99,7 +94,6 @@ void loop()
       drivetrain->Go(kInstructions[cur_instruction].slits, kInstructions[cur_instruction].movement, kInstructions[cur_instruction].speed_perc);
       cur_instruction++;
     }
-  }
 }
 
 // void loop()

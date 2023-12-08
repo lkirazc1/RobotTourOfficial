@@ -98,17 +98,17 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
 
         predicted_Direction = getPredictedDirection(current_Direction, 90); //gives turning direction
         if (predicted_Direction == final_Direction) {
-            instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
-            current_Direction = final_Direction;
-        } else if (predicted_Direction == getPredictedDirection(current_Direction, 180)) {
-            // Turn 180 degrees, so move backward
-            instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
-            current_Direction = final_Direction;
-        } else {
-            // Add an instruction for turning left
-            instructions.push_back({10000, Drivetrain::MOVE_LEFT, 80});
-            current_Direction = final_Direction;
-        }
+        instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
+        current_Direction = final_Direction;
+    } else if (predicted_Direction == getPredictedDirection(current_Direction, 180)) {
+        // Turn 180 degrees, so move backward
+        instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
+        current_Direction = final_Direction;
+    } else {
+        // Add an instruction for turning left
+        instructions.push_back({10000, Drivetrain::MOVE_LEFT, 80});
+        current_Direction = final_Direction;
+    }
 
         if(deltaX != 0) { //Move forwards and updates position
             for(int j = 0; j < abs(deltaX); j++) {

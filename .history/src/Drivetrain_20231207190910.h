@@ -241,7 +241,7 @@ public:
     }
 
 private:
-    static const int kCheckTime = 25; 
+    static const int kCheckTime = 50; 
     const double z_offset = 1;
 
     Movement movement;

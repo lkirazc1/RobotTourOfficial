@@ -5,7 +5,6 @@
 #include "Drivetrain.h"
 #include "Movements.h"
 
-int getPredictedDirection(int currentDirection, int angleOffset);
 
 struct Instruction
 {
@@ -58,8 +57,6 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
     int deltaY;
     int final_Direction;
     int current_Direction = int_Direction;
-    int predicted_Direction;
-    boolean goReverse;
     Point current_Point = pInitial;
     std::vector<Instruction> instructions;
     instructions.push_back({CMtoSteps(25), Drivetrain::FORWARD, 50});
@@ -86,7 +83,7 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         Serial.print("deltaX: ");
         Serial.println(deltaX);
         Serial.print("deltaY: ");
-        Serial.println(deltaY);
+        Serial.print(deltaY);
 
         Serial.print("Current Direction: ");
         Serial.println(current_Direction);
@@ -94,29 +91,17 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         Serial.println(final_Direction);
         Serial.println();
 
-        goReverse = false;
-
-        predicted_Direction = getPredictedDirection(current_Direction, 90); //gives turning direction
-        if (predicted_Direction == final_Direction) {
+        while(final_Direction != current_Direction) { //turn right until robot is facing correct direction
             instructions.push_back({10000, Drivetrain::MOVE_RIGHT, 80});
-            current_Direction = final_Direction;
-        } else if (predicted_Direction == getPredictedDirection(current_Direction, 180)) {
-            // Turn 180 degrees, so move backward
-            instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
-            current_Direction = final_Direction;
-        } else {
-            // Add an instruction for turning left
-            instructions.push_back({10000, Drivetrain::MOVE_LEFT, 80});
-            current_Direction = final_Direction;
+            current_Direction += 90;
+            if(current_Direction >= 360) {
+                current_Direction -= 360;
+            }
         }
 
         if(deltaX != 0) { //Move forwards and updates position
             for(int j = 0; j < abs(deltaX); j++) {
-                if(goReverse) {
-                    instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
-                } else {
-                    instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
-                }
+                instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
 
                 if(deltaX > 0) {
                     current_Point.incX();
@@ -127,11 +112,7 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
             }
         } else if(deltaY != 0) {
             for(int j = 0; j < abs(deltaY); j++) {
-                if(goReverse) {
-                    instructions.push_back({CMtoSteps(50), Drivetrain::BACKWARD, 50});
-                } else {
-                    instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
-                }
+                instructions.push_back({CMtoSteps(50), Drivetrain::FORWARD, 50});
 
                 if(deltaY > 0) {
                     current_Point.incY();
@@ -142,13 +123,5 @@ std::vector<Instruction> getPath(Point cords[], int len, Point pInitial, int int
         }
     }
     return instructions;
-}
-
-int getPredictedDirection(int currentDirection, int angleOffset) {
-    int prediction = currentDirection + angleOffset;
-    if(prediction >= 360) {
-        prediction -= 360;
-    }
-    return prediction;
 }
 #endif

@@ -32,7 +32,7 @@ Point starting_point = Point(0, 0);
 std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0);
 //const int kNumInstructions = kInstructionsBuffer.size();
 //Instruction* kInstructions = kInstructionsBuffer.data();
-Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
+Instruction kInstructions[] = {{CMtoSteps(25), Drivetrain::FORWARD, 80},
                                 // {10000, Drivetrain::MOVE_RIGHT, 80},
                                 // {CMtoSteps(50), Drivetrain::FORWARD, 80},
                                 // {10000, Drivetrain::MOVE_LEFT, 80},

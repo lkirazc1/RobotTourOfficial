@@ -23,18 +23,6 @@ bool is_sensor_working()
     return is_working;
 }
 
-bool buttonPressed() {
-    bool buttonPressed = false;
-    // button is active low
-    if (digitalRead(13) == LOW) {
-        buttonPressed = true;
-    } else {
-        buttonPressed = false;
-    }
-    return buttonPressed;
-}
-
-
 void setup_sensor(int accel_sensitivity, int gyro_sensitivity)
 {
     sensor.setAccelSensitivity(accel_sensitivity);

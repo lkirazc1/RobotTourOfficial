@@ -26,7 +26,7 @@ bool is_sensor_working()
 bool buttonPressed() {
     bool buttonPressed = false;
     // button is active low
-    if (digitalRead(13) == LOW) {
+    if (digitalRead(buttonPin) == LOW) {
         buttonPressed = true;
     } else {
         buttonPressed = false;
