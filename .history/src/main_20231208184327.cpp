@@ -39,7 +39,7 @@ Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
                                 {CMtoSteps(50), Drivetrain::FORWARD, 50},
                                 {10000, Drivetrain::MOVE_RIGHT, 70},
                                 {CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                {10000, Drivetrain::MOVE_LEFT, 70},
+                                {10000, Drivetrain::MOVE_LEFT, 50},
 };
 int kNumInstructions = sizeof(kInstructions)/sizeof(kInstructions[0]);
 

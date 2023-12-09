@@ -65,7 +65,7 @@ public:
         {
             return direction_diff < 3.0;
         }
-        return direction_diff < 4.0;
+        return direction_diff < 10.0;
     }
 
     void Calibrate() {

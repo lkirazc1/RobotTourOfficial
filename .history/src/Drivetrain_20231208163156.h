@@ -59,13 +59,13 @@ public:
         return false;
     }
 
-    bool stop_motor_turning(double direction_diff)
+    bool stop_motor_turning(double angle1, double angle2)
     {
         if (movement == MOVE_LEFT)
         {
-            return direction_diff < 3.0;
+            return directionDiff < 10.0;
         }
-        return direction_diff < 4.0;
+        return directionDiff < 8.0;
     }
 
     void Calibrate() {
@@ -197,7 +197,7 @@ public:
             // }
             double direction_diff = directionDiff(current_degrees_, angularPos);
 
-            bool target_direction_reached = stop_motor_turning(direction_diff);
+            bool target_direction_reached = (direction_diff < 8.0);
 
             Serial.println(direction_diff);
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT) && target_direction_reached)
@@ -253,7 +253,7 @@ public:
 
 private:
     static const int kCheckTime = 25; 
-    const double z_offset = 1;
+    const double z_offset = 1.001;
 
     Movement movement;
     // int rotation_starting_direction;

@@ -29,19 +29,19 @@ const int points_len = sizeof(points)/sizeof(points[0]);
 Point starting_point = Point(0, 0);
 
 
-// std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0, 50, 50);
-// const int kNumInstructions = kInstructionsBuffer.size();
-// Instruction* kInstructions = kInstructionsBuffer.data();
-Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                {10000, Drivetrain::MOVE_RIGHT, 70},
-                                {CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                {10000, Drivetrain::MOVE_LEFT, 70},
-                                {CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                {10000, Drivetrain::MOVE_RIGHT, 70},
-                                {CMtoSteps(50), Drivetrain::FORWARD, 50},
-                                {10000, Drivetrain::MOVE_LEFT, 70},
-};
-int kNumInstructions = sizeof(kInstructions)/sizeof(kInstructions[0]);
+std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0);
+const int kNumInstructions = kInstructionsBuffer.size();
+Instruction* kInstructions = kInstructionsBuffer.data();
+// Instruction kInstructions[] = {{CMtoSteps(50), Drivetrain::FORWARD, 50},
+                                // {10000, Drivetrain::MOVE_RIGHT, 50},
+                                // {CMtoSteps(50), Drivetrain::FORWARD, 50},
+                                // {10000, Drivetrain::MOVE_LEFT, 50},
+                                // {CMtoSteps(50), Drivetrain::FORWARD, 50},
+                                // {10000, Drivetrain::MOVE_RIGHT, 50},
+                                // {CMtoSteps(50), Drivetrain::FORWARD, 50},
+                                // {10000, Drivetrain::MOVE_LEFT, 50},
+// };
+//int kNumInstructions = sizeof(kInstructions)/sizeof(kInstructions[0]);
 
 
 void setup()

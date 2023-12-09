@@ -23,6 +23,7 @@ bool is_sensor_working()
     return is_working;
 }
 
+bool stop_motor_turning()
 
 
 bool buttonPressed() {

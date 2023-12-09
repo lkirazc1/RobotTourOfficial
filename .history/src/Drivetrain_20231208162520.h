@@ -59,15 +59,6 @@ public:
         return false;
     }
 
-    bool stop_motor_turning(double direction_diff)
-    {
-        if (movement == MOVE_LEFT)
-        {
-            return direction_diff < 3.0;
-        }
-        return direction_diff < 4.0;
-    }
-
     void Calibrate() {
         pinMode(kStraightnessCalibratorReadingPin, INPUT);
         float straightness = (float)analogRead(A0) / 1023;
@@ -197,8 +188,17 @@ public:
             // }
             double direction_diff = directionDiff(current_degrees_, angularPos);
 
-            bool target_direction_reached = stop_motor_turning(direction_diff);
-
+            if (movement == MOVE_LEFT)
+            {
+            }
+            else if (movement == MOVE_RIGHT)
+            {
+                bool target_direction_reached = (direction_diff < 10.0);
+            }
+            else
+            {
+                bool target_direction_reached = true;
+            }
             Serial.println(direction_diff);
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT) && target_direction_reached)
             {
@@ -253,7 +253,7 @@ public:
 
 private:
     static const int kCheckTime = 25; 
-    const double z_offset = 1;
+    const double z_offset = 1.001;
 
     Movement movement;
     // int rotation_starting_direction;

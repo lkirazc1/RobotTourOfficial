@@ -63,9 +63,9 @@ public:
     {
         if (movement == MOVE_LEFT)
         {
-            return direction_diff < 3.0;
+            return directionDiff < 8.0;
         }
-        return direction_diff < 4.0;
+        return directionDiff < 10.0;
     }
 
     void Calibrate() {
@@ -197,7 +197,7 @@ public:
             // }
             double direction_diff = directionDiff(current_degrees_, angularPos);
 
-            bool target_direction_reached = stop_motor_turning(direction_diff);
+            bool target_direction_reached = (direction_diff < 10.0);
 
             Serial.println(direction_diff);
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT) && target_direction_reached)

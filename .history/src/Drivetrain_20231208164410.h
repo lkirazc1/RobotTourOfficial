@@ -63,9 +63,9 @@ public:
     {
         if (movement == MOVE_LEFT)
         {
-            return direction_diff < 3.0;
+            return direction_diff < 8.0;
         }
-        return direction_diff < 4.0;
+        return directionDiff < 10.0;
     }
 
     void Calibrate() {
