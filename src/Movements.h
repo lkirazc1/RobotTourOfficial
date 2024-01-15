@@ -12,11 +12,6 @@ GY521 sensor(0x68, &Wire1);
 // QMC5883LCompass compass;
 
 
-const float WHEEL_DIAMETER = 6; // CM
-const int STEP_COUNT = 20;      // Ticks on Wheel
-
-// SCL - 16
-// SDA - 17
 bool is_sensor_working()
 {
     bool is_working = sensor.begin();
@@ -104,9 +99,9 @@ int MotorDrivers[2][2][2] = {
     // Front
     {
         // Left
-        {33, 34},
+        {35, 36},
         // Right
-        {35, 36}},
+        {33, 34}},
     // Back
     {
         // Left
@@ -114,12 +109,12 @@ int MotorDrivers[2][2][2] = {
         // Right
         {2, 3}}};
 
-int MotorSpeedPins[NUM_MOTORS] = {24, 25, 22, 23};
+int MotorSpeedPins[NUM_MOTORS] = {25, 24, 22, 23};
 int buttonPin = 13;
 
 
 // Corresponds to Motor values.
-int MotorDetectors[NUM_MOTORS] = {20, 15, 4, 5};
+int MotorDetectors[NUM_MOTORS] = {37, 30, 20, 4};
 
 void setup_motors()
 {
@@ -156,55 +151,94 @@ LeftRight get_left_right(Motor motor)
     return motor & 1 ? RIGHT : LEFT;
 }
 
-void motor_run(Motor motor, Movement movement, int speed_perc)
+void motor_run(Motor motor, Movement movement, double speed_perc, bool is_raw)
 {
     FrontBack front_back = get_front_back(motor);
     LeftRight left_right = get_left_right(motor);
 
     auto *motor_array = MotorDrivers[front_back][left_right];
-
-    // Scale speed_perc to 0..255, starting at a minimum.
-    static const int kStartSpeed = 150;
-    speed_perc = kStartSpeed + speed_perc * (255 - kStartSpeed) / 100;
-    if (speed_perc <= kStartSpeed)
+    double kStartingSpeed;
+    int scaled_speed_perc;
+    if (is_raw)
     {
-        speed_perc = 0;
+        scaled_speed_perc = (int)(speed_perc * 255 / 100.0);
     }
-
-    Serial.print("Writing motor speed ");
-    Serial.print(motor);
-    Serial.print(" ");
-    Serial.println(speed_perc);
-    analogWrite(MotorSpeedPins[motor], speed_perc);
-
-    switch (movement)
+    else
     {
-    case MOTOR_FORWARD:
-        digitalWrite(motor_array[0], HIGH);
-        digitalWrite(motor_array[1], LOW);
-        break;
-    case MOTOR_BACKWARD:
-        digitalWrite(motor_array[0], LOW);
-        digitalWrite(motor_array[1], HIGH);
-        break;
-    case MOTOR_STOP:
-        digitalWrite(motor_array[0], LOW);
-        digitalWrite(motor_array[1], LOW);
-        break;
+        kStartingSpeed = 255 * 0.4;
+        scaled_speed_perc = (int)(kStartingSpeed + speed_perc * (255 - kStartingSpeed) /100.0);
+    }
+    // Serial.print("Speed percent: ");
+    // Serial.println(speed_perc);
+    // Serial.print("Scaled speed percent: ");
+    // Serial.println(scaled_speed_perc);
+    
+
+    analogWrite(MotorSpeedPins[motor], scaled_speed_perc);
+
+    if (motor == MOTOR_LEFT_FRONT)
+    {
+        switch (movement)
+        {
+        case MOTOR_FORWARD:
+            digitalWrite(motor_array[0], HIGH);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        case MOTOR_BACKWARD:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], HIGH);
+            break;
+        case MOTOR_STOP:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        }
+    }
+    else if (motor == MOTOR_RIGHT_FRONT)
+    {
+        switch (movement)
+        {
+        case MOTOR_FORWARD:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], HIGH);
+            break;
+        case MOTOR_BACKWARD:
+            digitalWrite(motor_array[0], HIGH);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        case MOTOR_STOP:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        }
+    }
+    else
+    {
+        switch (movement)
+        {
+        case MOTOR_FORWARD:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], HIGH);
+            break;
+        case MOTOR_BACKWARD:
+            digitalWrite(motor_array[0], HIGH);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        case MOTOR_STOP:
+            digitalWrite(motor_array[0], LOW);
+            digitalWrite(motor_array[1], LOW);
+            break;
+        }
     }
 }
-
-int CMtoSteps(float cm)
+//!62% power
+int CMtoSteps(int cm)
 {
-
-    int result;                                  // Final calculation result
-    float circumference = WHEEL_DIAMETER * 3.14; // Calculate wheel circumference in cm
-    float cm_step = circumference / STEP_COUNT;  // CM per Step
-
-    float f_result = cm / cm_step; // Calculate result as a float
-    result = (int)f_result;        // Convert to an integer (note this is NOT rounded)
-
-    return result; // End and return result
+    if (cm == 25)
+    {
+        return 285;
+    }
+    return 407;
 }
 
 

@@ -10,15 +10,31 @@
 
 
 static const float kRawCalibrationSpeedAdj[NUM_MOTORS] = {
-    1.00, // MOTOR_LEFT_FRONT
-    0.99, // MOTOR_RIGHT_FRONT
-    0.96, // MOTOR_LEFT_BACK
-    0.95, // MOTOR_RIGHT_BACK
+    .7357, // MOTOR_LEFT_FRONT
+    1, // MOTOR_RIGHT_FRONT
+    .7357, // MOTOR_LEFT_BACK
+    1, // MOTOR_RIGHT_BACK
 };
 
-static const float kTurnAdj = 1.0;
+// static const float kTurnCalibrationSpeedAdj[NUM_MOTORS] = {
+//     0.87,
+//     1,
+//     0.87,
+//     .9,
+// };
+// static const float kTurnCalibrationSpeedAdj[NUM_MOTORS] = {
+//     1, 
+//     .93, 
+//     1,
+//     .93,
+// };
+static const float kTurnCalibrationSpeedAdj[NUM_MOTORS] = {
+    1,
+    1,
+    1,
+    1,
+};
 
-static const int kStraightnessCalibratorReadingPin = A0;
 
 class Drivetrain
 {
@@ -38,7 +54,6 @@ public:
         memset(last_read_, 0, sizeof(last_read_));
         memset(num_slits_left_, 0, sizeof(num_slits_left_));
         memset(is_moving_, 0, sizeof(is_moving_));
-        memcpy(calibration_speed_adj_, kRawCalibrationSpeedAdj, sizeof(kRawCalibrationSpeedAdj));
         setup_sensor(2, 2);
         angularPos = 0;
         velocity_over_time = 0;
@@ -65,12 +80,11 @@ public:
         {
             return direction_diff < 3.0;
         }
-        return direction_diff < 4.0;
+        return direction_diff < 3.0;
     }
 
-    void Calibrate() {
-        pinMode(kStraightnessCalibratorReadingPin, INPUT);
-        float straightness = (float)analogRead(A0) / 1023;
+    void Calibrate(int speed_perc) {
+        float straightness = 0.5;
         Serial.print("Straightness: ");
         Serial.println(straightness);
 
@@ -94,25 +108,38 @@ public:
         for (int i = 0; i < NUM_MOTORS; i++) {
             calibration_speed_adj_[i] /= max_adj;
         }
+        if (speed_perc == 65)
+        {
+            calibration_speed_adj_[0] = .75;
+            calibration_speed_adj_[1] = 1;
+            calibration_speed_adj_[2] = .75;
+            calibration_speed_adj_[3] = 1;
+            
+        }
     }
 
     void Go(int num_slits, Movement movement, int speed_perc)
     {
+        Calibrate(speed_perc);
         this->movement = movement;
+        time_at_last_go = millis();
+        max_speed = speed_perc;
         if (movement == FORWARD || movement == BACKWARD)
         {
+            time_since_start = millis();
             for (int i = 0; i < NUM_MOTORS; i++)
             {
                 Motor m = (Motor)i;
                 num_slits_left_[i] = num_slits;
                 is_moving_[i] = true;
-                motor_run(m, movement == FORWARD ? MOTOR_FORWARD : MOTOR_BACKWARD, (int)(speed_perc * calibration_speed_adj_[i]));
+                motor_run(m, movement == FORWARD ? MOTOR_FORWARD : MOTOR_BACKWARD, (int)(speed_perc * calibration_speed_adj_[i]), true);
             }
         }
 
         else if (movement == MOVE_LEFT)
         {
-            current_degrees_ = (current_degrees_ + 360 - 90) % 360;
+            angularPos = 0;
+            current_degrees_ = 270;
             // Serial.print("Current degrees: ");
             // Serial.println(current_degrees_);
 
@@ -120,20 +147,22 @@ public:
             {
                 Motor m = (Motor)i;
                 if (get_left_right(m) == LEFT) {
-                    num_slits_left_[i] = (int)(num_slits * kTurnAdj);
+                    num_slits_left_[i] = (int)(num_slits);
                     is_moving_[i] = true;
-                    motor_run(m, MOTOR_BACKWARD, (int)(speed_perc * calibration_speed_adj_[i] * kTurnAdj));
+                    motor_run(m, MOTOR_BACKWARD, (int)(speed_perc), true);
                 } else {
                     num_slits_left_[i] = num_slits;
                     is_moving_[i] = true;
-                    motor_run(m, MOTOR_FORWARD, (int)(speed_perc * calibration_speed_adj_[i]));
+                    motor_run(m, MOTOR_FORWARD, (int)(speed_perc), true);
                 }
             }
         }
 
         else if (movement == MOVE_RIGHT)
         {
-            current_degrees_ = (current_degrees_ + 90) % 360;
+            max_speed += 0;
+            current_degrees_ = 90;
+            angularPos = 0;
             // Serial.print("Current degrees: ");
             // Serial.println(current_degrees_);
 
@@ -143,11 +172,11 @@ public:
                 if (get_left_right(m) == LEFT) {
                     num_slits_left_[i] = num_slits;
                     is_moving_[i] = true;
-                    motor_run(m, MOTOR_FORWARD, (int)(speed_perc * calibration_speed_adj_[i]));
+                    motor_run(m, MOTOR_FORWARD, (int)(speed_perc), true);
                 } else {
-                    num_slits_left_[i] = (int)(num_slits * kTurnAdj);
+                    num_slits_left_[i] = (int)(num_slits);
                     is_moving_[i] = true;
-                    motor_run(m, MOTOR_BACKWARD, (int)(speed_perc * calibration_speed_adj_[i] * kTurnAdj));
+                    motor_run(m, MOTOR_BACKWARD, (int)(speed_perc), true);
                 }
             }
         }
@@ -199,22 +228,74 @@ public:
 
             bool target_direction_reached = stop_motor_turning(direction_diff);
 
-            Serial.println(direction_diff);
+            // Serial.println(direction_diff);
             if (is_moving_[i] && (movement == MOVE_LEFT || movement == MOVE_RIGHT) && target_direction_reached)
             {
-                motor_run((Motor)i, MOTOR_STOP, 0);
+                Serial.println(time_since_start);
+                motor_run((Motor)i, MOTOR_STOP, 0, false);
                 is_moving_ [i] = false;
+
             }
 
             last_read_[i] = cur_slit;
             if (num_slits_left_[i] <= 0 && is_moving_[i] && !(movement == MOVE_LEFT || movement == MOVE_RIGHT)) {
-                is_moving_[i] = false;
-                motor_run((Motor)i, MOTOR_STOP, 0);
+                for (int j = 0; j < NUM_MOTORS; j++)
+                {
+                    is_moving_[j] = false;
+                    motor_run((Motor)j, MOTOR_STOP, 0, false);
+                    Serial.println(time_since_start);
+                }
+            }
+        }
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     Serial.print(i);
+        //     Serial.print("     ");
+        //     Serial.println(num_slits_left_[i]);
+        // }
+
+        if (now > last_time_p_ + kCheckTimeP && is_moving() && (movement == MOVE_RIGHT || movement == MOVE_LEFT))
+        {
+            last_time_p_ = now;
+            int new_speed;
+            if (movement == MOVE_LEFT)
+            {
+                new_speed = (int)(abs(current_degrees_ - angularPos) * kp_left + (now - time_at_last_go) * ki_left);
+            }
+            else
+            {
+                new_speed = (int)(abs(current_degrees_ - angularPos) * kp_right + (now - time_at_last_go) * ki_right);
+            }
+            if (new_speed > max_speed)
+            {
+                new_speed = max_speed;
+            }
+            for (int j = 0; j < NUM_MOTORS; j++)
+            {
+                if (movement == MOVE_RIGHT && get_left_right((Motor)j) == LEFT)
+                {
+                    motor_run((Motor)j, MOTOR_FORWARD, (int)(new_speed * kTurnCalibrationSpeedAdj[j]), true);
+                    // motor_run((Motor)j, MOTOR_FORWARD, new_speed, false);
+                }
+                else if (movement == MOVE_LEFT && get_left_right((Motor)j) == RIGHT)
+                {
+                    motor_run((Motor)j, MOTOR_FORWARD, (int)(new_speed * kTurnCalibrationSpeedAdj[j]), true);
+                    // motor_run((Motor)j, MOTOR_FORWARD, new_speed, false);
+                }
+                else if (movement == MOVE_LEFT && get_left_right((Motor)j) == LEFT)
+                {
+                    motor_run((Motor)j, MOTOR_BACKWARD, (int)(new_speed * kTurnCalibrationSpeedAdj[j]), true);
+                    // motor_run((Motor)j, MOTOR_BACKWARD, new_speed, false);
+                }
+                else if (movement == MOVE_RIGHT && get_left_right((Motor)j) == RIGHT)
+                {
+                    motor_run((Motor)j, MOTOR_BACKWARD, (int)(new_speed * kTurnCalibrationSpeedAdj[j]), true);
+                    // motor_run((Motor)j, MOTOR_BACKWARD, new_speed, false);
+                }
             }
         }
 
-
-        if (now > last_time_ + kCheckTime) {
+        if (now > last_time_ + kCheckTime && is_moving() && (movement == MOVE_LEFT || movement == MOVE_RIGHT)) {
             last_time_ = now;
             //for (int i = 0; i < NUM_MOTORS; i++)
             //{
@@ -236,31 +317,29 @@ public:
             if (angularPos > 360) {
                 angularPos -= 360;
             }
-            // count++;
-            // velocity_over_time += current_z*kCheckTime*.001;
-            // Serial.print("Angular velocity summed up over current duration: ");
-            // Serial.println(velocity_over_time);
-            // Serial.print("Count: ");
-            // Serial.println(count);
-
-
-
-            // Serial.print("Angular Position ");
-            // Serial.println(angularPos);
-            // Serial.println();
+            Serial.print("Current Z: ");
+            Serial.println(current_z);
+            Serial.print("Angular Pos: ");
+            Serial.println(angularPos);
         }
     }
 
 private:
     static const int kCheckTime = 25; 
-    const double z_offset = 1;
+    static const int kCheckTimeP = 50;
+    const double z_offset = 1.1581;
+    const double kp_left = 4;
+    const double ki_left = 0.05;
+    const double kp_right = 4;
+    const double ki_right = 0.05;
 
     Movement movement;
-    // int rotation_starting_direction;
 
+    int time_at_last_go;
     double angularPos;
     double count;
     double velocity_over_time;
+    int last_time_p_ = 0;
     int last_time_ = 0;
     int last_read_[NUM_MOTORS];
     int num_slits_left_[NUM_MOTORS];
@@ -268,6 +347,9 @@ private:
     float calibration_speed_adj_[NUM_MOTORS];
     int current_degrees_;
     int north_;
+    int time_since_start;
+    double max_speed;
+
 };
 
 
